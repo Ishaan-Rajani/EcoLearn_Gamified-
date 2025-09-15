@@ -2,7 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import { HomeButton } from '@/components/HomeButton';
 import { useLanguage } from '@/hooks/useLanguage';
+import studentsLearning from '@/assets/students-learning.jpg';
+import ecoElements from '@/assets/eco-elements.jpg';
 import { Leaf, BookOpen, Users, Award, Globe, Sparkles } from 'lucide-react';
 
 const Index = () => {
@@ -10,8 +13,14 @@ const Index = () => {
   const { language, setLanguage, t } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10 flex items-center justify-center p-4 safe-area-top">
-      <div className="w-full max-w-md text-center space-y-8 animate-slide-up">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10 flex items-center justify-center p-4 safe-area-top relative overflow-hidden">
+      {/* Background illustration */}
+      <div 
+        className="absolute inset-0 opacity-10 bg-cover bg-center"
+        style={{ backgroundImage: `url(${studentsLearning})` }}
+      />
+      
+      <div className="w-full max-w-md text-center space-y-8 animate-slide-up relative z-10">
         {/* Logo and Branding */}
         <div className="space-y-4">
           <div className="flex items-center justify-center gap-3 mb-6">
@@ -44,21 +53,27 @@ const Index = () => {
           />
         </div>
 
-        {/* Features Grid */}
+        {/* Features Grid with illustrations */}
         <div className="grid grid-cols-2 gap-4 py-6">
-          <div className="bg-card/50 p-4 rounded-lg border border-border/50 card-hover">
-            <BookOpen className="h-8 w-8 text-primary mx-auto mb-2 animate-bounce-gentle" />
-            <p className="text-sm font-medium">Interactive Lessons</p>
+          <div className="bg-card/80 backdrop-blur-sm p-4 rounded-lg border border-border/50 card-hover relative overflow-hidden">
+            <div 
+              className="absolute inset-0 opacity-20 bg-cover bg-center"
+              style={{ backgroundImage: `url(${ecoElements})` }}
+            />
+            <div className="relative z-10">
+              <BookOpen className="h-8 w-8 text-primary mx-auto mb-2 animate-bounce-gentle" />
+              <p className="text-sm font-medium">Interactive Lessons</p>
+            </div>
           </div>
-          <div className="bg-card/50 p-4 rounded-lg border border-border/50 card-hover">
+          <div className="bg-card/80 backdrop-blur-sm p-4 rounded-lg border border-border/50 card-hover">
             <Users className="h-8 w-8 text-secondary mx-auto mb-2 animate-bounce-gentle" />
             <p className="text-sm font-medium">Real Challenges</p>
           </div>
-          <div className="bg-card/50 p-4 rounded-lg border border-border/50 card-hover">
+          <div className="bg-card/80 backdrop-blur-sm p-4 rounded-lg border border-border/50 card-hover">
             <Award className="h-8 w-8 text-accent mx-auto mb-2 animate-bounce-gentle" />
             <p className="text-sm font-medium">Earn Rewards</p>
           </div>
-          <div className="bg-card/50 p-4 rounded-lg border border-border/50 card-hover">
+          <div className="bg-card/80 backdrop-blur-sm p-4 rounded-lg border border-border/50 card-hover">
             <Globe className="h-8 w-8 text-success mx-auto mb-2 animate-bounce-gentle" />
             <p className="text-sm font-medium">Global Impact</p>
           </div>

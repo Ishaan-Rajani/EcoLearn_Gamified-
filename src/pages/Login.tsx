@@ -7,7 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import { HomeButton } from '@/components/HomeButton';
 import { useLanguage } from '@/hooks/useLanguage';
+import ecoElements from '@/assets/eco-elements.jpg';
 import { Leaf, School, MapPin, Users } from 'lucide-react';
 
 const schools = [
@@ -33,8 +35,16 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10 flex items-center justify-center p-4 safe-area-top">
-      <div className="w-full max-w-md space-y-6 animate-slide-up">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10 flex items-center justify-center p-4 safe-area-top relative overflow-hidden">
+      <HomeButton />
+      
+      {/* Background illustration */}
+      <div 
+        className="absolute inset-0 opacity-10 bg-cover bg-center"
+        style={{ backgroundImage: `url(${ecoElements})` }}
+      />
+      
+      <div className="w-full max-w-md space-y-6 animate-slide-up relative z-10">
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2 mb-4">
@@ -59,7 +69,7 @@ export default function Login() {
         </div>
 
         {/* Login Form */}
-        <Card className="card-hover">
+        <Card className="card-hover bg-card/80 backdrop-blur-sm border-border/50">
           <CardHeader>
             <CardTitle className="text-center">{t('login')} / {t('signup')}</CardTitle>
           </CardHeader>

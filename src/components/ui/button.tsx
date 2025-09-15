@@ -15,7 +15,6 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary-hover hover:shadow-eco",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        // Eco-themed variants
         eco: "bg-gradient-eco text-primary-foreground hover:shadow-eco hover:scale-105",
         reward: "bg-gradient-reward text-accent-foreground hover:shadow-float hover:scale-105 font-semibold",
         sky: "bg-gradient-sky text-secondary-foreground hover:shadow-eco hover:scale-105",
