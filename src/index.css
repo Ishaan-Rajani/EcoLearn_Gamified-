@@ -214,6 +214,18 @@
   .animate-slide-up {
     animation: slide-up 0.5s ease-out;
   }
+
+  .animate-bounce-in {
+    animation: bounce-in 0.6s ease-out;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-float-gentle {
+    animation: float-gentle 3s ease-in-out infinite;
+  }
 }
 
 @layer utilities {
@@ -245,9 +257,49 @@
     }
   }
 
+  @keyframes bounce-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.3) translateY(-50px);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05) translateY(0);
+    }
+    70% {
+      transform: scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 5px hsl(var(--primary) / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.6), 0 0 30px hsl(var(--primary) / 0.4);
+    }
+  }
+
+  @keyframes float-gentle {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
   /* Mobile-first responsive utilities */
   .container-mobile {
     @apply max-w-md mx-auto px-4;
+  }
+
+  .container-desktop {
+    @apply max-w-7xl mx-auto px-6;
   }
 
   .safe-area-top {
@@ -256,5 +308,51 @@
 
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Desktop layout utilities */
+  .desktop-layout {
+    @apply min-h-screen;
+  }
+
+  .desktop-sidebar {
+    @apply w-64 bg-sidebar-background border-r border-sidebar-border;
+  }
+
+  .desktop-main {
+    @apply flex-1 overflow-auto;
+  }
+
+  .desktop-grid {
+    @apply grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6;
+  }
+
+  .desktop-card {
+    @apply bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-shadow;
+  }
+
+  .desktop-header {
+    @apply bg-background border-b border-border px-6 py-4;
+  }
+
+  .desktop-content {
+    @apply p-6;
+  }
+
+  /* View mode specific styles */
+  .view-mobile {
+    @apply max-w-md mx-auto;
+  }
+
+  .view-desktop {
+    @apply max-w-none;
+  }
+
+  .view-mobile .desktop-only {
+    @apply hidden;
+  }
+
+  .view-desktop .mobile-only {
+    @apply hidden;
   }
 }

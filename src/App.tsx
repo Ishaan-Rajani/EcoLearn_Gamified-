@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/hooks/useLanguage";
+import { ViewModeProvider } from "@/hooks/useViewMode";
+import { ViewModeToggle } from "@/components/ViewModeToggle";
 
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -20,29 +22,32 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            
-            {/* Student Routes */}
-            <Route path="/dashboard" element={<StudentDashboard />} />
-            <Route path="/lessons" element={<Lessons />} />
-            <Route path="/challenges" element={<Challenges />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/rewards" element={<Rewards />} />
-            
-            {/* Teacher Routes */}
-            <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
-            
-            {/* Catch-all route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <ViewModeProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <ViewModeToggle />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              
+              {/* Student Routes */}
+              <Route path="/dashboard" element={<StudentDashboard />} />
+              <Route path="/lessons" element={<Lessons />} />
+              <Route path="/challenges" element={<Challenges />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/rewards" element={<Rewards />} />
+              
+              {/* Teacher Routes */}
+              <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+              
+              {/* Catch-all route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ViewModeProvider>
     </LanguageProvider>
   </QueryClientProvider>
 );
