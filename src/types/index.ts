@@ -8,6 +8,7 @@ export interface User {
   level: number;
   badges: Badge[];
   avatar?: string;
+  disabled?: boolean;
 }
 
 export interface School {
@@ -86,4 +87,18 @@ export interface Notification {
   type: 'success' | 'info' | 'warning' | 'error';
   timestamp: Date;
   read: boolean;
+}
+
+export interface AccessibilitySettings {
+  colorBlindMode: 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia';
+  showFocusIndicators: boolean;
+  showHelpTooltips: boolean;
+}
+
+export interface AppState {
+  user: User | null;
+  currentLanguage: Language;
+  isOffline: boolean;
+  notifications: Notification[];
+  accessibility: AccessibilitySettings;
 }

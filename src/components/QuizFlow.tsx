@@ -26,29 +26,7 @@ interface Question {
   explanation: string;
 }
 
-const sampleQuiz: Question[] = [
-  {
-    id: 1,
-    question: "Which energy source is renewable?",
-    options: ["Coal", "Solar", "Oil", "Natural Gas"],
-    correct: 1,
-    explanation: "Solar energy is renewable because it comes from the sun which won't run out!"
-  },
-  {
-    id: 2,
-    question: "What percentage of Earth's water is fresh water?",
-    options: ["50%", "25%", "3%", "75%"],
-    correct: 2,
-    explanation: "Only about 3% of Earth's water is fresh water that we can use!"
-  },
-  {
-    id: 3,
-    question: "How long does a plastic bottle take to decompose?",
-    options: ["1 year", "10 years", "100 years", "450 years"],
-    correct: 3,
-    explanation: "Plastic bottles take about 450 years to decompose - that's why recycling is important!"
-  }
-];
+// Quiz data will be created inside component to access translations
 
 interface QuizFlowProps {
   onComplete: (points: number, badge: any) => void;
@@ -65,6 +43,31 @@ export const QuizFlow: React.FC<QuizFlowProps> = ({ onComplete, onClose }) => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [currentStep, setCurrentStep] = useState<'quiz' | 'points' | 'leaderboard' | 'badge' | 'rewards'>('quiz');
+
+  // Create quiz data with translations
+  const sampleQuiz: Question[] = [
+    {
+      id: 1,
+      question: t('whichEnergyRenewable'),
+      options: [t('coal'), t('solar'), t('oil'), t('naturalGas')],
+      correct: 1,
+      explanation: t('solarExplanation')
+    },
+    {
+      id: 2,
+      question: t('whatPercentageFreshWater'),
+      options: ["50%", "25%", "3%", "75%"],
+      correct: 2,
+      explanation: t('freshWaterExplanation')
+    },
+    {
+      id: 3,
+      question: t('plasticBottleDecompose'),
+      options: [t('oneYear'), t('tenYears'), t('hundredYears'), t('fourFiftyYears')],
+      correct: 3,
+      explanation: t('plasticExplanation')
+    }
+  ];
 
   const currentQ = sampleQuiz[currentQuestion];
   const isLastQuestion = currentQuestion === sampleQuiz.length - 1;
@@ -111,10 +114,57 @@ export const QuizFlow: React.FC<QuizFlowProps> = ({ onComplete, onClose }) => {
     earnedAt: new Date()
   } : null;
 
+  // Get appropriate feedback message based on score
+  const getFeedbackMessage = () => {
+    if (score === 0) {
+      return {
+        title: t('youCanStillTryAgain'),
+        message: t('dontWorryLearning'),
+        icon: "🔄",
+        color: "text-warning"
+      };
+    } else if (score === 1) {
+      return {
+        title: t('goodEffort'),
+        message: t('onRightTrack'),
+        icon: "🌱",
+        color: "text-success"
+      };
+    } else if (score === 2) {
+      return {
+        title: t('wellDone'),
+        message: t('gettingHangOfIt'),
+        icon: "🌟",
+        color: "text-primary"
+      };
+    } else if (score === 3) {
+      return {
+        title: t('excellent'),
+        message: t('outstandingWork'),
+        icon: "🎉",
+        color: "text-success"
+      };
+    } else {
+      return {
+        title: t('perfect'),
+        message: t('environmentalExpert'),
+        icon: "🏆",
+        color: "text-badge-gold"
+      };
+    }
+  };
+
+  const feedback = getFeedbackMessage();
+
   const handleFlowNext = () => {
     switch (currentStep) {
       case 'points':
-        setCurrentStep('leaderboard');
+        if (score > 0) {
+          setCurrentStep('leaderboard');
+        } else {
+          // For zero score, go directly to completion to allow retry
+          onComplete(earnedPoints, earnedBadge);
+        }
         break;
       case 'leaderboard':
         if (earnedBadge) {
@@ -138,27 +188,30 @@ export const QuizFlow: React.FC<QuizFlowProps> = ({ onComplete, onClose }) => {
       <Card className="card-hover animate-slide-up">
         <CardHeader className="text-center">
           <div className="w-16 h-16 bg-gradient-reward rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce-gentle">
-            <Star className="h-8 w-8 text-white" />
+            <span className="text-3xl">{feedback.icon}</span>
           </div>
-          <CardTitle className="text-2xl">Great Job! 🎉</CardTitle>
+          <CardTitle className={`text-2xl ${feedback.color}`}>{feedback.title}</CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-6">
           <div>
-            <p className="text-muted-foreground mb-4">You scored {score} out of {sampleQuiz.length} questions!</p>
-            <PointsDisplay 
-              points={earnedPoints}
-              change={earnedPoints}
-              size="lg"
-              label="Eco Points Earned"
-              className="justify-center"
-            />
+            <p className="text-muted-foreground mb-2">You scored {score} out of {sampleQuiz.length} questions!</p>
+            <p className="text-sm text-muted-foreground mb-4">{feedback.message}</p>
+            {earnedPoints > 0 && (
+              <PointsDisplay 
+                points={earnedPoints}
+                change={earnedPoints}
+                size="lg"
+                label={t('ecoPointsEarned')}
+                className="justify-center"
+              />
+            )}
           </div>
           <Button onClick={handleFlowNext} variant="eco" size="lg" className="w-full">
             <TrendingUp className="mr-2 h-5 w-5" />
-            Check Leaderboard
+            {score > 0 ? t('checkLeaderboard') : t('tryAgain')}
           </Button>
         </CardContent>
-        <ConfettiAnimation trigger={true} />
+        {score > 0 && <ConfettiAnimation trigger={true} />}
       </Card>
     );
   }
@@ -170,22 +223,22 @@ export const QuizFlow: React.FC<QuizFlowProps> = ({ onComplete, onClose }) => {
           <div className="w-16 h-16 bg-gradient-to-r from-badge-gold to-accent rounded-full flex items-center justify-center mx-auto mb-4 animate-float">
             <Trophy className="h-8 w-8 text-white" />
           </div>
-          <CardTitle className="text-2xl">Leaderboard Updated! 📈</CardTitle>
+          <CardTitle className="text-2xl">{t('leaderboardUpdated')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-4 rounded-lg">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-medium">Your New Rank:</span>
+              <span className="font-medium">{t('yourNewRank')}</span>
               <Badge className="bg-badge-gold/10 text-badge-gold">#2 🥈</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-medium">Total Points:</span>
+              <span className="font-medium">{t('totalPoints')}</span>
               <span className="font-bold text-points">2,530</span>
             </div>
           </div>
           
           <div className="space-y-2">
-            <h4 className="font-semibold">Top 3 Students:</h4>
+            <h4 className="font-semibold">{t('top3Students')}</h4>
             <div className="space-y-2">
               <div className="flex items-center justify-between p-2 bg-badge-gold/10 rounded">
                 <span>🥇 Priya S.</span>
@@ -204,7 +257,7 @@ export const QuizFlow: React.FC<QuizFlowProps> = ({ onComplete, onClose }) => {
 
           <Button onClick={handleFlowNext} variant="reward" size="lg" className="w-full">
             <ArrowRight className="mr-2 h-5 w-5" />
-            {earnedBadge ? 'Claim Your Badge!' : 'View Rewards'}
+            {earnedBadge ? t('claimYourBadge') : t('viewRewards')}
           </Button>
         </CardContent>
       </Card>
@@ -215,7 +268,7 @@ export const QuizFlow: React.FC<QuizFlowProps> = ({ onComplete, onClose }) => {
     return (
       <Card className="card-hover animate-slide-up">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl mb-4">New Badge Earned! 🏆</CardTitle>
+          <CardTitle className="text-2xl mb-4">{t('newBadgeEarned')}</CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-6">
           <div className="flex justify-center">
@@ -234,7 +287,7 @@ export const QuizFlow: React.FC<QuizFlowProps> = ({ onComplete, onClose }) => {
 
           <Button onClick={handleFlowNext} variant="eco" size="lg" className="w-full">
             <Gift className="mr-2 h-5 w-5" />
-            View Rewards Screen
+            {t('viewRewards')}
           </Button>
         </CardContent>
         <CelebrationEffect show={showCelebration} />
@@ -246,11 +299,11 @@ export const QuizFlow: React.FC<QuizFlowProps> = ({ onComplete, onClose }) => {
     return (
       <Card className="card-hover animate-slide-up">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Rewards Updated! 🎁</CardTitle>
+          <CardTitle className="text-2xl">{t('congratulations')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="text-center">
-            <p className="text-muted-foreground mb-4">Your achievements have been added to your profile!</p>
+            <p className="text-muted-foreground mb-4">{t('achievementsAdded')}</p>
           </div>
           
           <div className="grid grid-cols-2 gap-4">
@@ -281,7 +334,7 @@ export const QuizFlow: React.FC<QuizFlowProps> = ({ onComplete, onClose }) => {
 
           <Button onClick={() => onComplete(earnedPoints, earnedBadge)} variant="eco" size="lg" className="w-full">
             <CheckCircle2 className="mr-2 h-5 w-5" />
-            Complete Quiz
+            {t('quizComplete')}
           </Button>
         </CardContent>
       </Card>
@@ -292,7 +345,7 @@ export const QuizFlow: React.FC<QuizFlowProps> = ({ onComplete, onClose }) => {
     <Card className="card-hover">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">🧠 Environmental Quiz</CardTitle>
+          <CardTitle className="text-lg">🧠 {t('environmentalQuiz')}</CardTitle>
           <Button variant="ghost" size="sm" onClick={onClose}>✕</Button>
         </div>
         <div className="space-y-2">
@@ -351,7 +404,7 @@ export const QuizFlow: React.FC<QuizFlowProps> = ({ onComplete, onClose }) => {
               )}
               <div>
                 <p className="font-medium mb-1">
-                  {selectedAnswer === currentQ.correct ? 'Correct! +50 points 🎉' : 'Incorrect'}
+                  {selectedAnswer === currentQ.correct ? t('correct') : t('incorrect')}
                 </p>
                 <p className="text-sm text-muted-foreground">{currentQ.explanation}</p>
               </div>
@@ -366,7 +419,7 @@ export const QuizFlow: React.FC<QuizFlowProps> = ({ onComplete, onClose }) => {
           size="lg"
           className="w-full"
         >
-          {isLastQuestion ? 'Finish Quiz' : 'Next Question'}
+          {isLastQuestion ? t('finishQuiz') : t('nextQuestion')}
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </CardContent>

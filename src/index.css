@@ -355,4 +355,58 @@
   .view-desktop .mobile-only {
     @apply hidden;
   }
+
+  /* Accessibility Features */
+  
+  /* Focus Indicators */
+  [data-focus-indicators="true"] *:focus {
+    @apply outline-2 outline-offset-2 outline-primary ring-2 ring-primary/20;
+  }
+
+  [data-focus-indicators="true"] button:focus,
+  [data-focus-indicators="true"] [role="button"]:focus {
+    @apply ring-4 ring-primary/30;
+  }
+
+  /* Color Blind Support */
+  [data-colorblind="protanopia"] {
+    /* Red-blind: Red appears darker, green appears brighter */
+    --primary: 120 76% 36%; /* Shift green to be more distinct */
+    --success: 120 81% 29%; /* Make success more distinct from primary */
+    --warning: 60 92% 50%; /* Shift warning to yellow-orange */
+    --destructive: 0 84% 60%; /* Keep red but make it more distinct */
+  }
+
+  [data-colorblind="deuteranopia"] {
+    /* Green-blind: Green appears darker, red appears brighter */
+    --primary: 0 76% 36%; /* Shift primary to red-based */
+    --success: 0 81% 29%; /* Make success red-based */
+    --warning: 60 92% 50%; /* Keep warning yellow */
+    --destructive: 0 84% 60%; /* Keep red */
+  }
+
+  [data-colorblind="tritanopia"] {
+    /* Blue-blind: Blue appears darker, yellow appears brighter */
+    --primary: 142 76% 36%; /* Keep green */
+    --secondary: 0 89% 48%; /* Shift secondary to red */
+    --success: 152 81% 29%; /* Keep success green */
+    --warning: 60 92% 50%; /* Keep warning yellow */
+    --accent: 0 96% 56%; /* Shift accent to red */
+  }
+
+  /* High contrast mode for better visibility */
+  [data-colorblind="protanopia"] .high-contrast,
+  [data-colorblind="deuteranopia"] .high-contrast,
+  [data-colorblind="tritanopia"] .high-contrast {
+    @apply border-2 border-foreground;
+  }
+
+  /* Help tooltip styles */
+  .help-tooltip-trigger {
+    @apply relative;
+  }
+
+  .help-tooltip-trigger .help-icon {
+    @apply absolute -top-1 -right-1 h-3 w-3 text-muted-foreground hover:text-foreground transition-colors cursor-help;
+  }
 }

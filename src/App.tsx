@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/hooks/useLanguage";
 import { ViewModeProvider } from "@/hooks/useViewMode";
+import { AccessibilityProvider } from "@/hooks/useAccessibility";
 import { ViewModeToggle } from "@/components/ViewModeToggle";
 
 import Index from "./pages/Index";
@@ -23,12 +24,13 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
       <ViewModeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <ViewModeToggle />
-            <Routes>
+        <AccessibilityProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <ViewModeToggle />
+              <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               
@@ -45,8 +47,9 @@ const App = () => (
               {/* Catch-all route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AccessibilityProvider>
       </ViewModeProvider>
     </LanguageProvider>
   </QueryClientProvider>

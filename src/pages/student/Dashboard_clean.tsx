@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MobileNav } from '@/components/MobileNav';
@@ -25,10 +24,7 @@ import {
   TrendingUp,
   Clock,
   CheckCircle2,
-  Play,
-  Menu,
-  Home,
-  Gift
+  Play
 } from 'lucide-react';
 
 // Mock data
@@ -53,33 +49,13 @@ const recentActivities = [
 ];
 
 export default function StudentDashboard() {
-  const navigate = useNavigate();
   const { language, setLanguage, t } = useLanguage();
   const { settings } = useAccessibility();
   const { viewMode } = useViewMode();
   const [showQuiz, setShowQuiz] = useState(false);
   const [showAccessibility, setShowAccessibility] = useState(false);
-  const [showDesktopMenu, setShowDesktopMenu] = useState(false);
   const [userPoints, setUserPoints] = useState(mockUser.ecoPoints);
   const [userBadges, setUserBadges] = useState(mockUser.badges);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowDesktopMenu(false);
-      }
-    };
-
-    if (showDesktopMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showDesktopMenu]);
 
   const handleQuizComplete = (points: number, badge: any) => {
     setUserPoints(prev => prev + points);
@@ -250,12 +226,7 @@ export default function StudentDashboard() {
             <Play className="h-6 w-6" />
             <span>Take Quiz</span>
           </Button>
-          <Button 
-            variant="sky" 
-            size="lg" 
-            className="h-20 flex-col gap-2"
-            onClick={() => navigate('/challenges')}
-          >
+          <Button variant="sky" size="lg" className="h-20 flex-col gap-2">
             <Target className="h-6 w-6" />
             <span>Challenges</span>
           </Button>
@@ -293,7 +264,6 @@ export default function StudentDashboard() {
   // Desktop Layout
   const DesktopLayout = () => (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10">
-      <HomeButton />
       <div className="container-desktop py-8">
         {/* Header */}
         <div className="bg-gradient-eco text-white p-8 rounded-2xl shadow-eco relative overflow-hidden mb-8">
@@ -365,102 +335,6 @@ export default function StudentDashboard() {
             <AccessibilityToggle />
           </div>
         )}
-
-        {/* Desktop Navigation Menu */}
-        <div className="mb-8 relative" ref={menuRef}>
-          <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => setShowDesktopMenu(!showDesktopMenu)}
-              className={`flex items-center gap-3 px-6 py-3 transition-all duration-200 ${
-                showDesktopMenu 
-                  ? 'bg-primary text-primary-foreground border-primary shadow-lg' 
-                  : 'hover:bg-muted/50 hover:border-primary/50'
-              }`}
-            >
-              <Menu className={`h-5 w-5 transition-transform duration-200 ${showDesktopMenu ? 'rotate-90' : ''}`} />
-              <span className="font-medium">{t('navigation')}</span>
-            </Button>
-            
-            {showDesktopMenu && (
-              <div className="absolute top-16 left-0 z-50 bg-white/95 backdrop-blur-md border border-border/50 rounded-2xl shadow-2xl p-2 min-w-[240px] animate-in slide-in-from-top-2 duration-200">
-                <div className="space-y-1">
-                  <Button
-                    variant="ghost"
-                    size="lg"
-                    className="w-full justify-start gap-4 px-4 py-3 rounded-xl hover:bg-primary/10 hover:text-primary transition-all duration-200"
-                    onClick={() => {
-                      setShowDesktopMenu(false);
-                      navigate('/dashboard');
-                    }}
-                  >
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <Home className="h-4 w-4 text-primary" />
-                    </div>
-                    <span className="font-medium">{t('dashboard')}</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="lg"
-                    className="w-full justify-start gap-4 px-4 py-3 rounded-xl hover:bg-secondary/10 hover:text-secondary transition-all duration-200"
-                    onClick={() => {
-                      setShowDesktopMenu(false);
-                      navigate('/lessons');
-                    }}
-                  >
-                    <div className="p-2 rounded-lg bg-secondary/10">
-                      <BookOpen className="h-4 w-4 text-secondary" />
-                    </div>
-                    <span className="font-medium">{t('lessons')}</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="lg"
-                    className="w-full justify-start gap-4 px-4 py-3 rounded-xl hover:bg-accent/10 hover:text-accent transition-all duration-200"
-                    onClick={() => {
-                      setShowDesktopMenu(false);
-                      navigate('/challenges');
-                    }}
-                  >
-                    <div className="p-2 rounded-lg bg-accent/10">
-                      <Target className="h-4 w-4 text-accent" />
-                    </div>
-                    <span className="font-medium">{t('challenges')}</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="lg"
-                    className="w-full justify-start gap-4 px-4 py-3 rounded-xl hover:bg-warning/10 hover:text-warning transition-all duration-200"
-                    onClick={() => {
-                      setShowDesktopMenu(false);
-                      navigate('/leaderboard');
-                    }}
-                  >
-                    <div className="p-2 rounded-lg bg-warning/10">
-                      <Trophy className="h-4 w-4 text-warning" />
-                    </div>
-                    <span className="font-medium">{t('leaderboard')}</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="lg"
-                    className="w-full justify-start gap-4 px-4 py-3 rounded-xl hover:bg-success/10 hover:text-success transition-all duration-200"
-                    onClick={() => {
-                      setShowDesktopMenu(false);
-                      navigate('/rewards');
-                    }}
-                  >
-                    <div className="p-2 rounded-lg bg-success/10">
-                      <Gift className="h-4 w-4 text-success" />
-                    </div>
-                    <span className="font-medium">{t('rewards')}</span>
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -563,12 +437,7 @@ export default function StudentDashboard() {
                 <Play className="h-8 w-8" />
                 <span>Take Quiz</span>
               </Button>
-              <Button 
-                variant="sky" 
-                size="lg" 
-                className="w-full h-16 flex-col gap-2 text-lg"
-                onClick={() => navigate('/challenges')}
-              >
+              <Button variant="sky" size="lg" className="w-full h-16 flex-col gap-2 text-lg">
                 <Target className="h-8 w-8" />
                 <span>Challenges</span>
               </Button>

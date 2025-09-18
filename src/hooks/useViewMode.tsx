@@ -35,3 +35,5 @@ export const ViewModeProvider: React.FC<ViewModeProviderProps> = ({ children }) 
     </ViewModeContext.Provider>
   );
 };
+
+

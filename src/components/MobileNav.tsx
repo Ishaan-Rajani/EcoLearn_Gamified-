@@ -28,8 +28,8 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isTeacher = false }) => {
 
   const teacherNavItems = [
     { to: '/teacher/dashboard', icon: BarChart3, label: t('dashboard') },
-    { to: '/teacher/students', icon: User, label: 'Students' },
-    { to: '/teacher/analytics', icon: BarChart3, label: 'Analytics' },
+    { to: '/teacher/students', icon: User, label: t('students') },
+    { to: '/teacher/analytics', icon: BarChart3, label: t('analytics') },
     { to: '/leaderboard', icon: Trophy, label: t('leaderboard') },
   ];
 

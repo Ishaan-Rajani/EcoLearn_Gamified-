@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { MobileNav } from '@/components/MobileNav';
 import { PointsDisplay } from '@/components/PointsDisplay';
+import { HomeButton } from '@/components/HomeButton';
+import { LanguageToggle } from '@/components/LanguageToggle';
+import { HelpTooltip } from '@/components/HelpTooltip';
+import { AccessibilityToggle } from '@/components/AccessibilityToggle';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useAccessibility } from '@/hooks/useAccessibility';
+import { useViewMode } from '@/hooks/useViewMode';
 import { 
   Trophy, 
   Medal, 
@@ -13,7 +20,12 @@ import {
   TrendingUp, 
   TrendingDown, 
   School,
-  Users
+  Users,
+  Menu,
+  Home,
+  BookOpen,
+  Target,
+  Gift
 } from 'lucide-react';
 
 const individualLeaderboard = [
@@ -35,8 +47,31 @@ const schoolLeaderboard = [
 ];
 
 export default function Leaderboard() {
-  const { t } = useLanguage();
+  const navigate = useNavigate();
+  const { language, setLanguage, t } = useLanguage();
+  const { settings } = useAccessibility();
+  const { viewMode } = useViewMode();
   const [activeTab, setActiveTab] = useState<'individual' | 'school'>('individual');
+  const [showAccessibility, setShowAccessibility] = useState(false);
+  const [showDesktopMenu, setShowDesktopMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowDesktopMenu(false);
+      }
+    };
+
+    if (showDesktopMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDesktopMenu]);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -62,15 +97,61 @@ export default function Leaderboard() {
     return <span className="text-muted-foreground">-</span>;
   };
 
-  return (
+  // Mobile Layout
+  const MobileLayout = () => (
     <div className="min-h-screen bg-background pb-20 safe-area-top">
+      <HomeButton />
+      
       {/* Header */}
       <header className="bg-gradient-to-r from-badge-gold to-accent text-badge-gold-foreground p-4 rounded-b-2xl shadow-float">
-        <h1 className="text-2xl font-display font-bold mb-2 text-white">
-          🏆 {t('leaderboard')}
-        </h1>
-        <p className="text-white/80 text-sm">Top eco-warriors and schools</p>
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <h1 className="text-2xl font-display font-bold text-white">
+              🏆 {t('leaderboard')}
+            </h1>
+            <p className="text-white/80 text-sm">Top eco-warriors and schools</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowAccessibility(!showAccessibility)}
+              className="text-white hover:bg-white/20 border border-white/30 px-3 py-2 rounded-lg"
+              title="Accessibility Settings"
+            >
+              <svg 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+                className="mr-1"
+              >
+                <circle cx="12" cy="5" r="2"/>
+                <path d="M8 11h8"/>
+                <path d="M12 11v8"/>
+                <path d="M8 15l2 4"/>
+                <path d="M16 15l-2 4"/>
+              </svg>
+              Accessibility
+            </Button>
+            <LanguageToggle 
+              currentLanguage={language}
+              onLanguageChange={setLanguage}
+            />
+          </div>
+        </div>
       </header>
+
+      {/* Accessibility Panel */}
+      {showAccessibility && (
+        <div className="container-mobile py-4">
+          <AccessibilityToggle />
+        </div>
+      )}
 
       <div className="container-mobile py-6 space-y-6">
         {/* Tab Switcher */}
@@ -216,6 +297,279 @@ export default function Leaderboard() {
       </div>
 
       <MobileNav />
+    </div>
+  );
+
+  // Desktop Layout
+  const DesktopLayout = () => (
+    <div className="min-h-screen bg-gradient-to-br from-background via-badge-gold/5 to-accent/10">
+      <HomeButton />
+      <div className="container-desktop py-8">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-badge-gold to-accent text-badge-gold-foreground p-8 rounded-2xl shadow-float relative overflow-hidden mb-8">
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h1 className="text-4xl font-display font-bold text-white">
+                  🏆 {t('leaderboard')}
+                </h1>
+                <p className="text-white/80 text-lg">Top eco-warriors and schools</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  onClick={() => setShowAccessibility(!showAccessibility)}
+                  className="text-white hover:bg-white/20 border border-white/30 px-6 py-3 rounded-lg"
+                  title="Accessibility Settings"
+                >
+                  <svg 
+                    width="20" 
+                    height="20" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    className="mr-2"
+                  >
+                    <circle cx="12" cy="5" r="2"/>
+                    <path d="M8 11h8"/>
+                    <path d="M12 11v8"/>
+                    <path d="M8 15l2 4"/>
+                    <path d="M16 15l-2 4"/>
+                  </svg>
+                  Accessibility
+                </Button>
+                <LanguageToggle 
+                  currentLanguage={language}
+                  onLanguageChange={setLanguage}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Accessibility Panel */}
+        {showAccessibility && (
+          <div className="mb-8">
+            <AccessibilityToggle />
+          </div>
+        )}
+
+        {/* Desktop Navigation Menu */}
+        <div className="mb-8 relative" ref={menuRef}>
+          <div className="flex items-center justify-between">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setShowDesktopMenu(!showDesktopMenu)}
+              className={`flex items-center gap-3 px-6 py-3 transition-all duration-200 ${
+                showDesktopMenu 
+                  ? 'bg-primary text-primary-foreground border-primary shadow-lg' 
+                  : 'hover:bg-muted/50 hover:border-primary/50'
+              }`}
+            >
+              <Menu className={`h-5 w-5 transition-transform duration-200 ${showDesktopMenu ? 'rotate-90' : ''}`} />
+              <span className="font-medium">Navigation</span>
+            </Button>
+            
+            {showDesktopMenu && (
+              <div className="absolute top-16 left-0 z-50 bg-white/95 backdrop-blur-md border border-border/50 rounded-2xl shadow-2xl p-2 min-w-[240px] animate-in slide-in-from-top-2 duration-200">
+                <div className="space-y-1">
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    className="w-full justify-start gap-4 px-4 py-3 rounded-xl hover:bg-primary/10 hover:text-primary transition-all duration-200"
+                    onClick={() => {
+                      setShowDesktopMenu(false);
+                      navigate('/dashboard');
+                    }}
+                  >
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Home className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="font-medium">Dashboard</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    className="w-full justify-start gap-4 px-4 py-3 rounded-xl hover:bg-secondary/10 hover:text-secondary transition-all duration-200"
+                    onClick={() => {
+                      setShowDesktopMenu(false);
+                      navigate('/lessons');
+                    }}
+                  >
+                    <div className="p-2 rounded-lg bg-secondary/10">
+                      <BookOpen className="h-4 w-4 text-secondary" />
+                    </div>
+                    <span className="font-medium">Lessons</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    className="w-full justify-start gap-4 px-4 py-3 rounded-xl hover:bg-accent/10 hover:text-accent transition-all duration-200"
+                    onClick={() => {
+                      setShowDesktopMenu(false);
+                      navigate('/challenges');
+                    }}
+                  >
+                    <div className="p-2 rounded-lg bg-accent/10">
+                      <Target className="h-4 w-4 text-accent" />
+                    </div>
+                    <span className="font-medium">Challenges</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    className="w-full justify-start gap-4 px-4 py-3 rounded-xl hover:bg-warning/10 hover:text-warning transition-all duration-200"
+                    onClick={() => {
+                      setShowDesktopMenu(false);
+                      navigate('/leaderboard');
+                    }}
+                  >
+                    <div className="p-2 rounded-lg bg-warning/10">
+                      <Trophy className="h-4 w-4 text-warning" />
+                    </div>
+                    <span className="font-medium">Leaderboard</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    className="w-full justify-start gap-4 px-4 py-3 rounded-xl hover:bg-success/10 hover:text-success transition-all duration-200"
+                    onClick={() => {
+                      setShowDesktopMenu(false);
+                      navigate('/rewards');
+                    }}
+                  >
+                    <div className="p-2 rounded-lg bg-success/10">
+                      <Gift className="h-4 w-4 text-success" />
+                    </div>
+                    <span className="font-medium">Rewards</span>
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="space-y-8">
+          {/* Tab Switcher */}
+          <HelpTooltip content="Switch between individual and school leaderboards to see different rankings!">
+            <div className="flex gap-3">
+              <Button
+                variant={activeTab === 'individual' ? 'default' : 'outline'}
+                size="lg"
+                onClick={() => setActiveTab('individual')}
+                className="flex items-center gap-3 px-6 py-3"
+              >
+                <Users className="h-5 w-5" />
+                Individual
+              </Button>
+              <Button
+                variant={activeTab === 'school' ? 'default' : 'outline'}
+                size="lg"
+                onClick={() => setActiveTab('school')}
+                className="flex items-center gap-3 px-6 py-3"
+              >
+                <School className="h-5 w-5" />
+                Schools
+              </Button>
+            </div>
+          </HelpTooltip>
+
+          {/* Leaderboard Content */}
+          <div className="space-y-6">
+            {activeTab === 'individual' ? (
+              <div className="space-y-4">
+                {individualLeaderboard.map((person) => (
+                  <Card key={person.rank} className="card-hover">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-badge-gold/20 to-accent/20">
+                            {getRankIcon(person.rank)}
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-lg">{person.name}</h3>
+                            <p className="text-sm text-muted-foreground">{person.school}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold text-xl text-points">
+                            {person.points.toLocaleString()}
+                          </div>
+                          <div className="flex items-center gap-1 justify-end">
+                            {getChangeIcon(person.change)}
+                            <span className="text-sm text-muted-foreground">
+                              {person.change !== 0 && Math.abs(person.change)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {schoolLeaderboard.map((school) => (
+                  <Card key={school.rank} className="card-hover">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-badge-gold/20 to-accent/20">
+                            {getRankIcon(school.rank)}
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-lg">{school.name}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {school.location} • {school.students} students
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold text-xl text-points">
+                            {school.totalPoints.toLocaleString()}
+                          </div>
+                          <div className="flex items-center gap-1 justify-end">
+                            {getChangeIcon(school.change)}
+                            <span className="text-sm text-muted-foreground">
+                              {school.change !== 0 && Math.abs(school.change)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Your Progress */}
+          <Card className="card-hover">
+            <CardContent className="p-8">
+              <h3 className="text-xl font-semibold mb-6 text-center">Your Progress</h3>
+              <div className="flex justify-center">
+                <PointsDisplay
+                  points={3890}
+                  change={25}
+                  size="lg"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className={viewMode === 'mobile' ? 'view-mobile' : 'view-desktop'}>
+      {viewMode === 'mobile' ? <MobileLayout /> : <DesktopLayout />}
     </div>
   );
 }
